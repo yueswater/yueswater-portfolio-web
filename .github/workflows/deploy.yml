@@ -1,0 +1,60 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+        env:
+          VITE_API_BASE: ${{ secrets.API_URL }}
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/632859162417/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: github-deploy@yueswater-portfolio.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Upload to GCS
+        run: gcloud storage cp -r dist/* gs://yueswater-portfolio-web/
+
+      - name: Invalidate CDN cache
+        run: gcloud compute url-maps invalidate-cdn-cache yueswater-portfolio-web-lb --path="/*" --project=yueswater-portfolio
+
+      - name: Send failure email
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "Yueswater Portfolio Frontend deploy failed - ${{ github.sha }}"
+          to: sungpinyue@gmail.com
+          from: ${{ secrets.SMTP_USER }}
+          body: |
+            Deploy failed!
+
+            Repo: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            Log: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
