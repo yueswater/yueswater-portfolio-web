@@ -59,6 +59,13 @@ export const translations = {
         'quote.errorFallback': '提交失敗',
         'quote.errorGeneric': '發生錯誤，請稍後再試',
         'quote.goChat': '前往聊天室 →',
+        'quote.confirmTitle': '確認報價資訊',
+        'quote.editBack': '重新編輯',
+        'quote.confirmSubmit': '確認送出',
+        'quote.captchaLabel': '安全驗證',
+        'quote.captchaPlaceholder': '請輸入答案',
+        'quote.captchaWrong': '答案不正確，請再試一次',
+        'quote.budgetUp': '起',
 
         // Login Page
         'login.title': '登入',
@@ -168,6 +175,13 @@ export const translations = {
         'quote.errorFallback': 'Submission failed',
         'quote.errorGeneric': 'An error occurred, please try again later',
         'quote.goChat': 'Go to Chat →',
+        'quote.confirmTitle': 'Confirm Quote Details',
+        'quote.editBack': 'Edit',
+        'quote.confirmSubmit': 'Confirm & Submit',
+        'quote.captchaLabel': 'Security Check',
+        'quote.captchaPlaceholder': 'Enter the answer',
+        'quote.captchaWrong': 'Wrong answer, please try again',
+        'quote.budgetUp': 'up',
 
         // Login Page
         'login.title': 'Login',

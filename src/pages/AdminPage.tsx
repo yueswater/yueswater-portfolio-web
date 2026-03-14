@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Plus, Pencil, Trash2, LogOut, X, Upload, ImageIcon, Lock, Briefcase } from 'lucide-react';
+import { Plus, Pencil, Trash2, LogOut, X, Upload, ImageIcon, Lock, Briefcase, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE } from '../api';
 import TagSelector from '../components/TagSelector';
@@ -148,6 +148,8 @@ function ServiceForm({ item, onClose, onSaved }: { item?: any; onClose: () => vo
 
     const inputBase = "w-full bg-transparent border-b border-[#020202]/20 focus:border-[#020202] outline-none py-2 text-base font-light transition-colors placeholder:opacity-40";
     const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm(p => ({ ...p, [k]: e.target.value }));
+    const formatMoney = (v: string) => { const n = v.replace(/[^\d]/g, ''); return n ? Number(n).toLocaleString('en-US') : ''; };
+    const setPrice = (e: React.ChangeEvent<HTMLInputElement>) => setForm(p => ({ ...p, price: e.target.value.replace(/[^\d]/g, '') }));
 
     return (
         <div className="fixed inset-0 bg-[#020202]/50 z-50 flex items-center justify-center p-6">
@@ -181,7 +183,7 @@ function ServiceForm({ item, onClose, onSaved }: { item?: any; onClose: () => vo
                     <div>
                         <MarkdownEditor textareaRef={descRef} value={form.description} onChange={v => setForm(p => ({ ...p, description: v }))} rows={4} placeholder="服務描述（支援 Markdown）" />
                     </div>
-                    <input value={form.price} onChange={set('price')} placeholder="價格（空白為議價）" type="number" min="0" className={inputBase} />
+                    <input value={formatMoney(form.price)} onChange={setPrice} placeholder="價格（空白為議價）" type="text" inputMode="numeric" className={inputBase} />
                     <button type="submit" disabled={!img.imageUrl || img.uploading || !category.trim()} className="w-full bg-[#020202] text-[#f3f3f3] py-3 text-sm font-semibold uppercase tracking-widest hover:bg-[#333] transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
                         {item ? '更新' : '新增'}
                     </button>
@@ -286,6 +288,7 @@ export default function AdminPage() {
     const [deletePassword, setDeletePassword] = useState('');
     const [deleteError, setDeleteError] = useState('');
     const [caseCreating, setCaseCreating] = useState(false);
+    const [search, setSearch] = useState('');
 
     const fetchData = async () => {
         if (tab === 'about' || tab === 'chat' || tab === 'cases') { setLoading(false); return; }
@@ -308,7 +311,17 @@ export default function AdminPage() {
             .catch(() => { localStorage.removeItem('token'); navigate('/login'); });
     }, [navigate]);
 
-    useEffect(() => { fetchData(); }, [tab]);
+    useEffect(() => { fetchData(); setSearch(''); }, [tab]);
+
+    const fuzzy = (text: string) => text.toLowerCase().includes(search.toLowerCase().trim());
+    const filteredData = search.trim()
+        ? data.filter(item => {
+            if (tab === 'portfolios') return fuzzy(item.name_zh) || fuzzy(item.name_en) || (item.tags || []).some((t: string) => fuzzy(t));
+            if (tab === 'services') return fuzzy(item.name) || fuzzy(item.category) || (item.price != null && fuzzy(String(item.price)));
+            if (tab === 'quotes') return fuzzy(item.quote_number) || fuzzy(item.client_name) || fuzzy(item.client_email) || fuzzy(item.expected_completion);
+            return true;
+        })
+        : data;
 
     const handleDelete = async (id: string) => {
         if (tab === 'quotes') {
@@ -407,27 +420,38 @@ export default function AdminPage() {
             </div>
 
             {/* Actions */}
-            {tab !== 'quotes' && tab !== 'about' && tab !== 'chat' && tab !== 'cases' && (
-                <div className="mb-8">
-                    <button
-                        onClick={() => setCreating(true)}
-                        className="flex items-center gap-2 bg-[#020202] text-[#f3f3f3] px-6 py-3 text-sm font-semibold uppercase tracking-widest hover:bg-[#333] transition-colors"
-                    >
-                        <Plus size={16} /> 新增{tab === 'portfolios' ? '作品集' : '服務'}
-                    </button>
+            {tab !== 'about' && tab !== 'chat' && tab !== 'cases' && (
+                <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                    {tab !== 'quotes' && (
+                        <button
+                            onClick={() => setCreating(true)}
+                            className="flex items-center gap-2 bg-[#020202] text-[#f3f3f3] px-6 py-3 text-sm font-semibold uppercase tracking-widest hover:bg-[#333] transition-colors shrink-0"
+                        >
+                            <Plus size={16} /> 新增{tab === 'portfolios' ? '作品集' : '服務'}
+                        </button>
+                    )}
+                    <div className="relative flex-1 max-w-md">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30" />
+                        <input
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            placeholder="搜尋..."
+                            className="w-full bg-transparent border border-[#020202]/20 focus:border-[#020202] outline-none pl-10 pr-3 py-3 text-sm font-light transition-colors placeholder:opacity-40"
+                        />
+                    </div>
                 </div>
             )}
 
             {/* Table */}
             {tab !== 'about' && tab !== 'chat' && tab !== 'cases' && (loading ? (
                 <div className="text-center py-20 opacity-60">載入中...</div>
-            ) : data.length === 0 ? (
-                <div className="text-center py-20 opacity-60">尚無資料</div>
+            ) : filteredData.length === 0 ? (
+                <div className="text-center py-20 opacity-60">{search ? '無符合結果' : '尚無資料'}</div>
             ) : (
                 <>
                     {/* Mobile Cards */}
                     <div className="md:hidden space-y-3">
-                        {data.map(item => (
+                        {filteredData.map(item => (
                             <div key={item.id} className="border border-[#020202]/10 p-4 hover:bg-[#020202]/[0.02] transition-colors">
                                 {tab === 'portfolios' && (
                                     <>
@@ -493,7 +517,7 @@ export default function AdminPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map(item => (
+                                {filteredData.map(item => (
                                     <tr key={item.id} className="border-b border-[#020202]/10 hover:bg-[#020202]/5 transition-colors">
                                         {tab === 'portfolios' && (
                                             <>

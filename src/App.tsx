@@ -17,7 +17,7 @@ export default function App() {
     <I18nProvider>
       <ToastProvider>
         <BrowserRouter>
-          <div className="min-h-screen bg-[#f3f3f3] text-[#020202] selection:bg-[#020202] selection:text-[#f3f3f3]">
+          <div className="min-h-screen bg-[#f3f3f3] text-[#020202] selection:bg-[#020202] selection:text-[#f3f3f3] select-none">
             <Cursor />
             <Navbar />
             <Routes>

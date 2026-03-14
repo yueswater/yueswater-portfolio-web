@@ -36,6 +36,10 @@ body {
   isolation: isolate;
 }
 
+.hover-fill.inline-flex {
+  display: inline-flex;
+}
+
 .hover-fill::before {
   content: "";
   position: absolute;
@@ -154,4 +158,16 @@ body {
 .about-content a>* {
   position: relative;
   z-index: 1;
+}
+
+/* ── Allow text selection on content areas ── */
+.about-content,
+.prose,
+td,
+.select-text,
+input,
+textarea,
+[contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
 }

@@ -79,13 +79,13 @@ export default function ServicesPage() {
                                             <p className="text-sm opacity-60 leading-relaxed line-clamp-3 mb-4">
                                                 {service.description.replace(/[#*`_~]/g, '')}
                                             </p>
-                                            <div className="flex justify-between items-center">
-                                                <span className="font-semibold text-lg">
+                                            <div className="flex justify-between items-center gap-4">
+                                                <span className="font-semibold text-lg truncate">
                                                     {service.price != null ? `NT$ ${service.price.toLocaleString('zh-TW')}` : t('services.negotiate')}
                                                 </span>
                                                 <Link
                                                     to={`/quote?service=${service.id}`}
-                                                    className="hover-fill flex items-center gap-2 text-sm font-medium uppercase tracking-widest"
+                                                    className="hover-fill inline-flex items-center gap-2 text-sm font-medium uppercase tracking-widest shrink-0 whitespace-nowrap"
                                                 >
                                                     {t('services.quote')} <ArrowRight size={16} />
                                                 </Link>

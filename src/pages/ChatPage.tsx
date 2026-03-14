@@ -424,7 +424,7 @@ export function ChatRoom({ token, roomId, senderType, onAuthFailed }: { token: s
                                 <div key={msg.id} className={`flex mb-2 ${isOwn ? 'justify-end' : 'justify-start'}`}>
                                     <div className={`max-w-[75%] ${isOwn ? 'items-end' : 'items-start'} flex flex-col`}>
                                         {msg.message_type === 'text' && (
-                                            <div className={`px-4 py-2.5 text-sm leading-relaxed ${isOwn ? 'bg-[#020202] text-[#f3f3f3] rounded-2xl rounded-br-sm' : 'bg-white text-[#020202] rounded-2xl rounded-bl-sm shadow-sm'}`}>
+                                            <div className={`px-4 py-2.5 text-sm leading-relaxed select-text ${isOwn ? 'bg-[#020202] text-[#f3f3f3] rounded-2xl rounded-br-sm' : 'bg-white text-[#020202] rounded-2xl rounded-bl-sm shadow-sm'}`}>
                                                 {msg.content}
                                             </div>
                                         )}

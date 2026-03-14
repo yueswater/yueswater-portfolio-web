@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Send, ImageIcon, DollarSign, X, MessageSquare, Briefcase, ArrowLeft } from 'lucide-react';
+import { Send, ImageIcon, DollarSign, X, MessageSquare, Briefcase, ArrowLeft, Search } from 'lucide-react';
 import { API_BASE } from '../api';
 import { ChatRoom as ChatRoomUI } from '../pages/ChatPage';
 import { useToast } from './Toast';
@@ -38,6 +38,7 @@ export default function AdminChat() {
     const [caseQuoteIds, setCaseQuoteIds] = useState<Set<string>>(new Set());
 
     const token = localStorage.getItem('token') || '';
+    const [roomSearch, setRoomSearch] = useState('');
 
     const fetchRooms = async () => {
         try {
@@ -65,7 +66,7 @@ export default function AdminChat() {
     }, []);
 
     const sendOffer = async () => {
-        const amount = parseFloat(offerAmount);
+        const amount = parseFloat(offerAmount.replace(/[^\d]/g, ''));
         if (!amount || !activeRoom) return;
         await fetch(`${API_BASE}/api/chat/rooms/${activeRoom}/offer`, {
             method: 'POST',
@@ -77,6 +78,11 @@ export default function AdminChat() {
     };
 
     const activeRoomData = rooms.find(r => r.id === activeRoom);
+
+    const fuzzy = (text: string) => text.toLowerCase().includes(roomSearch.toLowerCase().trim());
+    const filteredRooms = roomSearch.trim()
+        ? rooms.filter(r => fuzzy(r.client_name) || fuzzy(r.quote_number) || fuzzy(r.client_email))
+        : rooms;
 
     const handleCreateCase = async () => {
         if (!activeRoomData) return;
@@ -136,35 +142,46 @@ export default function AdminChat() {
     return (
         <div className="flex border border-[#020202]/10 h-[calc(100vh-280px)] sm:h-[calc(100vh-320px)] min-h-[400px] sm:min-h-[500px]">
             {/* Room List */}
-            <div className={`w-full md:w-80 border-r border-[#020202]/10 overflow-y-auto md:shrink-0 ${activeRoom ? 'hidden md:block' : ''}`}>
-                {rooms.map(room => (
-                    <button
-                        key={room.id}
-                        onClick={() => setActiveRoom(room.id)}
-                        className={`w-full text-left p-4 border-b border-[#020202]/5 hover:bg-[#020202]/5 transition-colors ${activeRoom === room.id ? 'bg-[#020202]/5' : ''}`}
-                    >
-                        <div className="flex items-start justify-between">
-                            <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-2">
-                                    <span className="font-semibold text-sm truncate">{room.client_name}</span>
-                                    {room.unread_count > 0 && (
-                                        <span className="bg-[#020202] text-[#f3f3f3] text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
-                                            {room.unread_count}
-                                        </span>
-                                    )}
+            <div className={`w-full md:w-80 border-r border-[#020202]/10 overflow-y-auto md:shrink-0 flex flex-col ${activeRoom ? 'hidden md:flex' : ''}`}>
+                <div className="p-3 border-b border-[#020202]/5">
+                    <div className="relative">
+                        <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 opacity-30" />
+                        <input
+                            value={roomSearch}
+                            onChange={e => setRoomSearch(e.target.value)}
+                            placeholder="搜尋聊天室..."
+                            className="w-full bg-transparent border border-[#020202]/10 focus:border-[#020202]/30 outline-none pl-8 pr-3 py-2 text-xs font-light transition-colors placeholder:opacity-40"
+                        />
+                    </div>
+                </div>
+                <div className="flex-1 overflow-y-auto">
+                    {filteredRooms.map(room => (
+                        <button
+                            key={room.id}
+                            onClick={() => setActiveRoom(room.id)}
+                            className={`w-full text-left p-4 border-b border-[#020202]/5 hover:bg-[#020202]/5 transition-colors ${activeRoom === room.id ? 'bg-[#020202]/5' : ''}`}
+                        >
+                            <div className="flex items-start justify-between">
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-semibold text-sm truncate">{room.client_name}</span>
+                                        {room.unread_count > 0 && (
+                                            <span className="bg-[#020202] text-[#f3f3f3] text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                                                {room.unread_count}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-[10px] font-mono opacity-40 mt-0.5">{room.quote_number}</p>
+                                    <p className="text-xs opacity-50 mt-1 truncate">{getPreview(room)}</p>
                                 </div>
-                                <p className="text-[10px] font-mono opacity-40 mt-0.5">{room.quote_number}</p>
-                                <p className="text-xs opacity-50 mt-1 truncate">{getPreview(room)}</p>
+                                {room.last_message && (
+                                    <span className="text-[10px] opacity-30 shrink-0 ml-2">{formatTime(room.last_message.created_at)}</span>
+                                )}
                             </div>
-                            {room.last_message && (
-                                <span className="text-[10px] opacity-30 shrink-0 ml-2">{formatTime(room.last_message.created_at)}</span>
-                            )}
-                        </div>
-                    </button>
-                ))}
+                        </button>
+                    ))}
+                </div>
             </div>
-
-            {/* Chat Panel */}
             <div className={`flex-1 flex flex-col min-w-0 ${!activeRoom ? 'hidden md:flex' : ''}`}>
                 {activeRoom && activeRoomData ? (
                     <>
@@ -231,10 +248,10 @@ export default function AdminChat() {
                         <div className="flex items-center gap-2 mb-6">
                             <span className="text-sm font-medium opacity-60">NT$</span>
                             <input
-                                type="number"
-                                min="0"
-                                value={offerAmount}
-                                onChange={e => setOfferAmount(e.target.value)}
+                                type="text"
+                                inputMode="numeric"
+                                value={offerAmount ? Number(offerAmount.replace(/[^\d]/g, '')).toLocaleString('en-US') : ''}
+                                onChange={e => setOfferAmount(e.target.value.replace(/[^\d]/g, ''))}
                                 placeholder="輸入金額"
                                 className="flex-1 bg-transparent border-b border-[#020202]/20 focus:border-[#020202] outline-none py-2 text-2xl font-bold tracking-tight"
                                 autoFocus
@@ -242,7 +259,7 @@ export default function AdminChat() {
                         </div>
                         <button
                             onClick={sendOffer}
-                            disabled={!offerAmount || parseFloat(offerAmount) <= 0}
+                            disabled={!offerAmount || parseFloat(offerAmount.replace(/[^\d]/g, '')) <= 0}
                             className="w-full bg-[#020202] text-[#f3f3f3] py-2.5 text-sm font-semibold uppercase tracking-widest disabled:opacity-30"
                         >
                             發送報價

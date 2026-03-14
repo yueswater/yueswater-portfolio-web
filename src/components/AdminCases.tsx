@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Briefcase, CheckCircle, X, Lock } from 'lucide-react';
+import { Briefcase, CheckCircle, X, Lock, Search } from 'lucide-react';
 import { API_BASE } from '../api';
 import { useToast } from './Toast';
 
@@ -28,6 +28,7 @@ export default function AdminCases() {
     const [closingId, setClosingId] = useState<string | null>(null);
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [search, setSearch] = useState('');
 
     const fetchCases = async () => {
         try {
@@ -66,6 +67,11 @@ export default function AdminCases() {
 
     if (loading) return <div className="text-center py-20 opacity-60">載入中...</div>;
 
+    const fuzzy = (text: string) => text.toLowerCase().includes(search.toLowerCase().trim());
+    const filtered = search.trim()
+        ? cases.filter(c => fuzzy(c.case_number) || fuzzy(c.client_name) || fuzzy(c.client_email) || fuzzy(c.quote_number || '') || fuzzy(c.status === 'active' ? '進行中' : '已結案'))
+        : cases;
+
     if (cases.length === 0) {
         return (
             <div className="text-center py-20 opacity-60 flex flex-col items-center gap-4">
@@ -77,63 +83,38 @@ export default function AdminCases() {
 
     return (
         <>
-            {/* Mobile Cards */}
-            <div className="md:hidden space-y-3">
-                {cases.map(c => (
-                    <div key={c.id} className="border border-[#020202]/10 p-4 hover:bg-[#020202]/[0.02] transition-colors">
-                        <div className="flex justify-between items-start">
-                            <div className="min-w-0 flex-1">
-                                <p className="font-mono font-semibold text-sm">{c.case_number}</p>
-                                <p className="text-xs font-mono opacity-40 mt-0.5">{c.quote_number || '—'}</p>
-                            </div>
-                            <span className={`text-xs font-semibold uppercase tracking-widest px-2 py-1 shrink-0 ${c.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-[#020202]/10 text-[#020202]/50'}`}>
-                                {c.status === 'active' ? '進行中' : '已結案'}
-                            </span>
-                        </div>
-                        <p className="font-medium mt-2">{c.client_name}</p>
-                        <p className="text-sm opacity-50 truncate">{c.client_email}</p>
-                        <div className="flex justify-between items-center mt-3">
-                            <span className="text-xs opacity-40">{parseDate(c.created_at)}</span>
-                            {c.status === 'active' && (
-                                <button
-                                    onClick={() => { setClosingId(c.id); setPassword(''); setError(''); }}
-                                    className="flex items-center gap-1 text-xs font-semibold uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity"
-                                >
-                                    <CheckCircle size={14} /> 結案
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                ))}
+            {/* Search */}
+            <div className="relative max-w-md mb-6">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30" />
+                <input
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    placeholder="搜尋案件..."
+                    className="w-full bg-transparent border border-[#020202]/20 focus:border-[#020202] outline-none pl-10 pr-3 py-3 text-sm font-light transition-colors placeholder:opacity-40"
+                />
             </div>
-            {/* Desktop Table */}
-            <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-left">
-                    <thead>
-                        <tr className="border-b border-[#020202]/20 text-xs uppercase tracking-widest opacity-50">
-                            <th className="py-3 pr-4">案件編號</th>
-                            <th className="py-3 pr-4">報價編號</th>
-                            <th className="py-3 pr-4">客戶</th>
-                            <th className="py-3 pr-4">信箱</th>
-                            <th className="py-3 pr-4">狀態</th>
-                            <th className="py-3 pr-4">成立時間</th>
-                            <th className="py-3">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {cases.map(c => (
-                            <tr key={c.id} className="border-b border-[#020202]/10 hover:bg-[#020202]/5 transition-colors">
-                                <td className="py-4 pr-4 text-sm font-mono font-semibold">{c.case_number}</td>
-                                <td className="py-4 pr-4 text-sm font-mono opacity-60">{c.quote_number || '—'}</td>
-                                <td className="py-4 pr-4 font-medium">{c.client_name}</td>
-                                <td className="py-4 pr-4 text-sm opacity-60">{c.client_email}</td>
-                                <td className="py-4 pr-4">
-                                    <span className={`text-xs font-semibold uppercase tracking-widest px-2 py-1 ${c.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-[#020202]/10 text-[#020202]/50'}`}>
+
+            {filtered.length === 0 ? (
+                <div className="text-center py-20 opacity-60">{search ? '無符合結果' : '尚無案件'}</div>
+            ) : (
+                <>
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-3">
+                        {filtered.map(c => (
+                            <div key={c.id} className="border border-[#020202]/10 p-4 hover:bg-[#020202]/[0.02] transition-colors">
+                                <div className="flex justify-between items-start">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-mono font-semibold text-sm">{c.case_number}</p>
+                                        <p className="text-xs font-mono opacity-40 mt-0.5">{c.quote_number || '—'}</p>
+                                    </div>
+                                    <span className={`text-xs font-semibold uppercase tracking-widest px-2 py-1 shrink-0 ${c.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-[#020202]/10 text-[#020202]/50'}`}>
                                         {c.status === 'active' ? '進行中' : '已結案'}
                                     </span>
-                                </td>
-                                <td className="py-4 pr-4 text-sm opacity-60">{parseDate(c.created_at)}</td>
-                                <td className="py-4">
+                                </div>
+                                <p className="font-medium mt-2">{c.client_name}</p>
+                                <p className="text-sm opacity-50 truncate">{c.client_email}</p>
+                                <div className="flex justify-between items-center mt-3">
+                                    <span className="text-xs opacity-40">{parseDate(c.created_at)}</span>
                                     {c.status === 'active' && (
                                         <button
                                             onClick={() => { setClosingId(c.id); setPassword(''); setError(''); }}
@@ -142,12 +123,54 @@ export default function AdminCases() {
                                             <CheckCircle size={14} /> 結案
                                         </button>
                                     )}
-                                </td>
-                            </tr>
+                                </div>
+                            </div>
                         ))}
-                    </tbody>
-                </table>
-            </div>
+                    </div>
+                    {/* Desktop Table */}
+                    <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead>
+                                <tr className="border-b border-[#020202]/20 text-xs uppercase tracking-widest opacity-50">
+                                    <th className="py-3 pr-4">案件編號</th>
+                                    <th className="py-3 pr-4">報價編號</th>
+                                    <th className="py-3 pr-4">客戶</th>
+                                    <th className="py-3 pr-4">信箱</th>
+                                    <th className="py-3 pr-4">狀態</th>
+                                    <th className="py-3 pr-4">成立時間</th>
+                                    <th className="py-3">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filtered.map(c => (
+                                    <tr key={c.id} className="border-b border-[#020202]/10 hover:bg-[#020202]/5 transition-colors">
+                                        <td className="py-4 pr-4 text-sm font-mono font-semibold">{c.case_number}</td>
+                                        <td className="py-4 pr-4 text-sm font-mono opacity-60">{c.quote_number || '—'}</td>
+                                        <td className="py-4 pr-4 font-medium">{c.client_name}</td>
+                                        <td className="py-4 pr-4 text-sm opacity-60">{c.client_email}</td>
+                                        <td className="py-4 pr-4">
+                                            <span className={`text-xs font-semibold uppercase tracking-widest px-2 py-1 ${c.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-[#020202]/10 text-[#020202]/50'}`}>
+                                                {c.status === 'active' ? '進行中' : '已結案'}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 pr-4 text-sm opacity-60">{parseDate(c.created_at)}</td>
+                                        <td className="py-4">
+                                            {c.status === 'active' && (
+                                                <button
+                                                    onClick={() => { setClosingId(c.id); setPassword(''); setError(''); }}
+                                                    className="flex items-center gap-1 text-xs font-semibold uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity"
+                                                >
+                                                    <CheckCircle size={14} /> 結案
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
+            )}
 
             {/* Close Case Modal */}
             {closingId && (
