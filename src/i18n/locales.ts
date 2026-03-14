@@ -1,0 +1,224 @@
+export type Locale = 'zh' | 'en';
+
+export const translations = {
+    zh: {
+        // Navbar
+        'nav.work': '作品',
+        'nav.about': '關於',
+        'nav.services': '服務',
+        'nav.contact': '聯絡',
+        'nav.chat': '聊天室',
+        'nav.langLabel': 'EN',
+
+        // Hero
+        'hero.greeting': '嗨，',
+        'hero.name': '我是 Anthony。',
+        'hero.subtitle': '我是一名全端工程師，專注於打造極簡、高效能且具擴展性的數位體驗。',
+
+        // Gallery
+        'gallery.title': '精選作品',
+        'gallery.period': '2024 — 2026',
+
+        // About
+        'about.title': '關於我',
+        'about.p1': '我是一名熱愛極簡設計與穩健架構的全端工程師。我相信最優秀的數位產品能夠完美融合形式與功能，褪去不必要的裝飾，展現最純粹的核心價值。',
+        'about.p2': '具備 React、Node.js 與雲端基礎設施等現代網頁技術的專業知識，我致力於開發能提供卓越使用者體驗的擴展性應用程式。我的開發哲學建立在乾淨的程式碼、效能最佳化以及深思熟慮的互動設計之上。',
+
+        // Contact
+        'contact.title': '聊聊吧',
+        'contact.cta': '填寫報價表單 →',
+
+        // Services Page
+        'services.title': '服務項目',
+        'services.subtitle': '提供從前端開發到全端整合的完整服務，滿足各種數位需求。',
+        'services.loading': '載入中...',
+        'services.empty': '目前尚無服務項目',
+        'services.negotiate': '議價',
+        'services.quote': '報價',
+
+        // Quote Page
+        'quote.title': '取得報價',
+        'quote.subtitle': '填寫以下表單，讓我了解您的需求與預算。',
+        'quote.submitted': '已送出',
+        'quote.thankYou': '感謝您的報價需求！確認信已寄送至您的信箱，我會盡快回覆您。',
+        'quote.sectionInfo': '基本資料',
+        'quote.name': '您的姓名',
+        'quote.email': '電子郵件',
+        'quote.phone': '聯絡電話',
+        'quote.sectionService': '服務選擇',
+        'quote.selectService': '請選擇服務項目',
+        'quote.sectionRequirement': '需求描述',
+        'quote.requirementPlaceholder': '請描述您的需求（支援 Markdown 格式）',
+        'quote.sectionBudget': '預算範圍（NTD）',
+        'quote.budgetMin': '預算下限（必填）',
+        'quote.budgetMax': '預算上限（選填）',
+        'quote.sectionTimeline': '期望時間',
+        'quote.timelinePlaceholder': '例如：2026 年 6 月底前',
+        'quote.submitting': '提交中...',
+        'quote.submit': '送出報價需求',
+        'quote.errorFallback': '提交失敗',
+        'quote.errorGeneric': '發生錯誤，請稍後再試',
+        'quote.goChat': '前往聊天室 →',
+
+        // Login Page
+        'login.title': '登入',
+        'login.username': '帳號',
+        'login.password': '密碼',
+        'login.submitting': '登入中...',
+        'login.submit': '登入',
+        'login.errorFallback': '登入失敗',
+        'login.errorGeneric': '發生錯誤',
+
+        // Chat Page
+        'chat.title': '聊天室',
+        'chat.subtitle': '使用訂單編號與信箱進入聊天室，與我們即時溝通。',
+        'chat.quoteNumber': '訂單編號',
+        'chat.email': '電子郵件',
+        'chat.enter': '進入聊天室',
+        'chat.entering': '進入中...',
+        'chat.leave': '離開',
+        'chat.authError': '訂單編號或信箱不正確',
+        'chat.placeholder': '輸入訊息...',
+        'chat.offer': '報價',
+        'chat.accept': '接受',
+        'chat.reject': '拒絕',
+        'chat.confirmReject': '確認拒絕',
+        'chat.rejectReason': '拒絕原因（選填，最多 100 字）',
+        'chat.accepted': '已接受',
+        'chat.rejected': '已拒絕',
+        'chat.pending': '待回覆',
+        'chat.read': '已讀',
+        'chat.typing': '對方正在輸入...',
+
+        // Cases
+        'case.title': '案件管理',
+        'case.create': '成立案件',
+        'case.close': '結案',
+        'case.active': '進行中',
+        'case.closed': '已結案',
+        'case.number': '案件編號',
+        'case.noData': '尚無案件',
+        'case.confirmClose': '確認結案',
+        'case.alreadyExists': '此報價已成立案件',
+        'case.passwordRequired': '請輸入密碼以確認操作',
+        'case.wrongPassword': '密碼錯誤',
+        'case.created': '案件已成立',
+        'case.closedSuccess': '案件已結案',
+
+        // Delete
+        'delete.confirmTitle': '確認刪除',
+        'delete.passwordRequired': '請輸入密碼以確認刪除',
+        'delete.wrongPassword': '密碼錯誤',
+    },
+    en: {
+        // Navbar
+        'nav.work': 'Work',
+        'nav.about': 'About',
+        'nav.services': 'Services',
+        'nav.contact': 'Contact',
+        'nav.chat': 'Chat',
+        'nav.langLabel': '中文',
+
+        // Hero
+        'hero.greeting': 'Hello,',
+        'hero.name': "I'm Anthony.",
+        'hero.subtitle': 'A full-stack engineer focused on crafting minimal, high-performance, and scalable digital experiences.',
+
+        // Gallery
+        'gallery.title': 'Selected Works',
+        'gallery.period': '2024 — 2026',
+
+        // About
+        'about.title': 'About Me',
+        'about.p1': 'I\'m a full-stack engineer who loves minimalist design and robust architecture. I believe the best digital products seamlessly blend form and function, stripping away the unnecessary to reveal the purest core value.',
+        'about.p2': 'With expertise in modern web technologies such as React, Node.js, and cloud infrastructure, I build scalable applications that deliver exceptional user experiences. My development philosophy is grounded in clean code, performance optimization, and thoughtful interaction design.',
+
+        // Contact
+        'contact.title': "Let's Talk",
+        'contact.cta': 'Fill out a quote form →',
+
+        // Services Page
+        'services.title': 'Services',
+        'services.subtitle': 'Comprehensive services from front-end development to full-stack integration, meeting all your digital needs.',
+        'services.loading': 'Loading...',
+        'services.empty': 'No services available yet',
+        'services.negotiate': 'Negotiable',
+        'services.quote': 'Quote',
+
+        // Quote Page
+        'quote.title': 'Get a Quote',
+        'quote.subtitle': 'Fill out the form below so I can understand your needs and budget.',
+        'quote.submitted': 'Submitted',
+        'quote.thankYou': 'Thank you for your quote request! A confirmation email has been sent to your inbox. I\'ll get back to you shortly.',
+        'quote.sectionInfo': 'Basic Info',
+        'quote.name': 'Your Name',
+        'quote.email': 'Email',
+        'quote.phone': 'Phone',
+        'quote.sectionService': 'Service Selection',
+        'quote.selectService': 'Select a service',
+        'quote.sectionRequirement': 'Requirements',
+        'quote.requirementPlaceholder': 'Describe your requirements (Markdown supported)',
+        'quote.sectionBudget': 'Budget Range (NTD)',
+        'quote.budgetMin': 'Min Budget (required)',
+        'quote.budgetMax': 'Max Budget (optional)',
+        'quote.sectionTimeline': 'Expected Timeline',
+        'quote.timelinePlaceholder': 'e.g. By the end of June 2026',
+        'quote.submitting': 'Submitting...',
+        'quote.submit': 'Submit Quote Request',
+        'quote.errorFallback': 'Submission failed',
+        'quote.errorGeneric': 'An error occurred, please try again later',
+        'quote.goChat': 'Go to Chat →',
+
+        // Login Page
+        'login.title': 'Login',
+        'login.username': 'Username',
+        'login.password': 'Password',
+        'login.submitting': 'Signing in...',
+        'login.submit': 'Sign In',
+        'login.errorFallback': 'Login failed',
+        'login.errorGeneric': 'An error occurred',
+
+        // Chat Page
+        'chat.title': 'Chat',
+        'chat.subtitle': 'Enter with your order number and email to chat with us in real time.',
+        'chat.quoteNumber': 'Order Number',
+        'chat.email': 'Email',
+        'chat.enter': 'Enter Chat',
+        'chat.entering': 'Entering...',
+        'chat.leave': 'Leave',
+        'chat.authError': 'Invalid order number or email',
+        'chat.placeholder': 'Type a message...',
+        'chat.offer': 'Quote Offer',
+        'chat.accept': 'Accept',
+        'chat.reject': 'Reject',
+        'chat.confirmReject': 'Confirm Reject',
+        'chat.rejectReason': 'Reason for rejection (optional, max 100 chars)',
+        'chat.accepted': 'Accepted',
+        'chat.rejected': 'Rejected',
+        'chat.pending': 'Pending',
+        'chat.read': 'Read',
+        'chat.typing': 'typing...',
+
+        // Cases
+        'case.title': 'Cases',
+        'case.create': 'Create Case',
+        'case.close': 'Close',
+        'case.active': 'Active',
+        'case.closed': 'Closed',
+        'case.number': 'Case No.',
+        'case.noData': 'No cases yet',
+        'case.confirmClose': 'Confirm Close',
+        'case.alreadyExists': 'A case already exists for this quote',
+        'case.passwordRequired': 'Enter password to confirm',
+        'case.wrongPassword': 'Wrong password',
+        'case.created': 'Case created',
+        'case.closedSuccess': 'Case closed',
+
+        // Delete
+        'delete.confirmTitle': 'Confirm Delete',
+        'delete.passwordRequired': 'Enter password to confirm deletion',
+        'delete.wrongPassword': 'Wrong password',
+    },
+} as const;
+
+export type TranslationKey = keyof typeof translations['zh'];
