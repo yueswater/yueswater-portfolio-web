@@ -189,7 +189,10 @@ export function ChatRoom({ token, roomId, senderType, onAuthFailed }: { token: s
             currentWs = ws;
             wsRef.current = ws;
 
-            ws.onopen = () => { delay = 1000; };
+            ws.onopen = () => {
+                delay = 1000;
+                if (document.hasFocus()) ws.send(JSON.stringify({ type: 'read' }));
+            };
 
             ws.onerror = () => { console.error('[ChatRoom] WebSocket error'); };
 
@@ -207,6 +210,10 @@ export function ChatRoom({ token, roomId, senderType, onAuthFailed }: { token: s
                         return [...prev, msg as ChatMsg];
                     });
                     setTimeout(() => scrollBottom(), 50);
+                    // Auto mark-read if the message is from the peer and page is visible
+                    if ((msg as ChatMsg).sender_type !== senderType && document.hasFocus()) {
+                        ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify({ type: 'read' }));
+                    }
                 } else if (data.type === 'typing') {
                     if (data.sender_type !== senderType) {
                         setTyping(true);

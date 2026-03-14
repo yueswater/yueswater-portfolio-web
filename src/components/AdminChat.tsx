@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Send, ImageIcon, DollarSign, X, MessageSquare, Briefcase } from 'lucide-react';
+import { Send, ImageIcon, DollarSign, X, MessageSquare, Briefcase, ArrowLeft } from 'lucide-react';
 import { API_BASE } from '../api';
 import { ChatRoom as ChatRoomUI } from '../pages/ChatPage';
 import { useToast } from './Toast';
@@ -134,9 +134,9 @@ export default function AdminChat() {
     }
 
     return (
-        <div className="flex border border-[#020202]/10 h-[calc(100vh-320px)] min-h-[500px]">
+        <div className="flex border border-[#020202]/10 h-[calc(100vh-280px)] sm:h-[calc(100vh-320px)] min-h-[400px] sm:min-h-[500px]">
             {/* Room List */}
-            <div className="w-80 border-r border-[#020202]/10 overflow-y-auto shrink-0">
+            <div className={`w-full md:w-80 border-r border-[#020202]/10 overflow-y-auto md:shrink-0 ${activeRoom ? 'hidden md:block' : ''}`}>
                 {rooms.map(room => (
                     <button
                         key={room.id}
@@ -165,28 +165,45 @@ export default function AdminChat() {
             </div>
 
             {/* Chat Panel */}
-            <div className="flex-1 flex flex-col min-w-0">
+            <div className={`flex-1 flex flex-col min-w-0 ${!activeRoom ? 'hidden md:flex' : ''}`}>
                 {activeRoom && activeRoomData ? (
                     <>
                         {/* Header */}
-                        <div className="p-4 border-b border-[#020202]/10 flex items-center justify-between shrink-0">
-                            <div>
-                                <h3 className="font-bold text-sm">{activeRoomData.client_name}</h3>
-                                <p className="text-[10px] font-mono opacity-40">{activeRoomData.quote_number} · {activeRoomData.client_email}</p>
+                        <div className="p-3 sm:p-4 border-b border-[#020202]/10 flex items-center justify-between shrink-0 gap-2">
+                            <div className="flex items-center gap-3 min-w-0">
+                                <button onClick={() => setActiveRoom(null)} className="md:hidden shrink-0 opacity-60 hover:opacity-100 transition-opacity"><ArrowLeft size={20} /></button>
+                                <div className="min-w-0">
+                                    <h3 className="font-bold text-sm truncate">{activeRoomData.client_name}</h3>
+                                    <p className="text-[10px] font-mono opacity-40 truncate">{activeRoomData.quote_number} · {activeRoomData.client_email}</p>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 shrink-0">
                                 <button
                                     onClick={handleCreateCase}
                                     disabled={caseCreating || caseQuoteIds.has(activeRoomData.quote_id)}
-                                    className="flex items-center gap-1.5 border border-[#020202]/20 text-[#020202] px-4 py-2 text-xs font-semibold uppercase tracking-widest hover:bg-[#020202]/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                    className="hidden sm:flex items-center gap-1.5 border border-[#020202]/20 text-[#020202] px-4 py-2 text-xs font-semibold uppercase tracking-widest hover:bg-[#020202]/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                                 >
                                     <Briefcase size={14} /> {caseQuoteIds.has(activeRoomData.quote_id) ? '已成立案件' : '成立案件'}
                                 </button>
                                 <button
+                                    onClick={handleCreateCase}
+                                    disabled={caseCreating || caseQuoteIds.has(activeRoomData.quote_id)}
+                                    title={caseQuoteIds.has(activeRoomData.quote_id) ? '已成立案件' : '成立案件'}
+                                    className="sm:hidden p-2 border border-[#020202]/20 text-[#020202] disabled:opacity-30 disabled:cursor-not-allowed"
+                                >
+                                    <Briefcase size={16} />
+                                </button>
+                                <button
                                     onClick={() => setOfferModal(true)}
-                                    className="flex items-center gap-1.5 bg-[#020202] text-[#f3f3f3] px-4 py-2 text-xs font-semibold uppercase tracking-widest hover:bg-[#333] transition-colors"
+                                    className="hidden sm:flex items-center gap-1.5 bg-[#020202] text-[#f3f3f3] px-4 py-2 text-xs font-semibold uppercase tracking-widest hover:bg-[#333] transition-colors"
                                 >
                                     <DollarSign size={14} /> 報價
+                                </button>
+                                <button
+                                    onClick={() => setOfferModal(true)}
+                                    className="sm:hidden p-2 bg-[#020202] text-[#f3f3f3]"
+                                >
+                                    <DollarSign size={16} />
                                 </button>
                             </div>
                         </div>

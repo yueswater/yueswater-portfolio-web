@@ -77,7 +77,37 @@ export default function AdminCases() {
 
     return (
         <>
-            <div className="overflow-x-auto">
+            {/* Mobile Cards */}
+            <div className="md:hidden space-y-3">
+                {cases.map(c => (
+                    <div key={c.id} className="border border-[#020202]/10 p-4 hover:bg-[#020202]/[0.02] transition-colors">
+                        <div className="flex justify-between items-start">
+                            <div className="min-w-0 flex-1">
+                                <p className="font-mono font-semibold text-sm">{c.case_number}</p>
+                                <p className="text-xs font-mono opacity-40 mt-0.5">{c.quote_number || '—'}</p>
+                            </div>
+                            <span className={`text-xs font-semibold uppercase tracking-widest px-2 py-1 shrink-0 ${c.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-[#020202]/10 text-[#020202]/50'}`}>
+                                {c.status === 'active' ? '進行中' : '已結案'}
+                            </span>
+                        </div>
+                        <p className="font-medium mt-2">{c.client_name}</p>
+                        <p className="text-sm opacity-50 truncate">{c.client_email}</p>
+                        <div className="flex justify-between items-center mt-3">
+                            <span className="text-xs opacity-40">{parseDate(c.created_at)}</span>
+                            {c.status === 'active' && (
+                                <button
+                                    onClick={() => { setClosingId(c.id); setPassword(''); setError(''); }}
+                                    className="flex items-center gap-1 text-xs font-semibold uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity"
+                                >
+                                    <CheckCircle size={14} /> 結案
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left">
                     <thead>
                         <tr className="border-b border-[#020202]/20 text-xs uppercase tracking-widest opacity-50">

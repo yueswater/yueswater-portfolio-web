@@ -84,9 +84,9 @@ function PortfolioForm({ item, onClose, onSaved }: { item?: any; onClose: () => 
 
     return (
         <div className="fixed inset-0 bg-[#020202]/50 z-50 flex items-center justify-center p-6">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#f3f3f3] w-full max-w-lg p-8 relative max-h-[90vh] overflow-y-auto">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#f3f3f3] w-full max-w-lg p-5 sm:p-8 relative max-h-[90vh] overflow-y-auto">
                 <button onClick={onClose} className="absolute top-4 right-4 opacity-60 hover:opacity-100"><X size={20} /></button>
-                <h3 className="text-2xl font-bold mb-6">{item ? '編輯作品集' : '新增作品集'}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold mb-6">{item ? '編輯作品集' : '新增作品集'}</h3>
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <input value={form.name_zh} onChange={set('name_zh')} placeholder="中文名稱" required className={inputBase} />
                     <input value={form.name_en} onChange={set('name_en')} placeholder="英文名稱" required className={inputBase} />
@@ -151,9 +151,9 @@ function ServiceForm({ item, onClose, onSaved }: { item?: any; onClose: () => vo
 
     return (
         <div className="fixed inset-0 bg-[#020202]/50 z-50 flex items-center justify-center p-6">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#f3f3f3] w-full max-w-lg p-8 relative max-h-[90vh] overflow-y-auto">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#f3f3f3] w-full max-w-lg p-5 sm:p-8 relative max-h-[90vh] overflow-y-auto">
                 <button onClick={onClose} className="absolute top-4 right-4 opacity-60 hover:opacity-100"><X size={20} /></button>
-                <h3 className="text-2xl font-bold mb-6">{item ? '編輯服務' : '新增服務'}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold mb-6">{item ? '編輯服務' : '新增服務'}</h3>
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <input value={form.name} onChange={set('name')} placeholder="服務名稱" required className={inputBase} />
 
@@ -385,21 +385,21 @@ export default function AdminPage() {
     ];
 
     return (
-        <main className="px-6 md:px-12 lg:px-24 pt-40 pb-24 max-w-[1800px] mx-auto">
-            <div className="flex justify-between items-center mb-12">
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase">Admin</h1>
+        <main className="px-4 sm:px-6 md:px-12 lg:px-24 pt-28 sm:pt-40 pb-24 max-w-[1800px] mx-auto">
+            <div className="flex justify-between items-center mb-8 sm:mb-12">
+                <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter uppercase">Admin</h1>
                 <button onClick={logout} className="flex items-center gap-2 text-sm font-medium uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity">
                     <LogOut size={16} /> 登出
                 </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1 mb-10 border-b border-[#020202]/20">
+            <div className="flex gap-1 mb-10 border-b border-[#020202]/20 overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0">
                 {tabs.map(t => (
                     <button
                         key={t.key}
                         onClick={() => setTab(t.key)}
-                        className={`px-6 py-3 text-sm font-semibold uppercase tracking-widest transition-colors ${tab === t.key ? 'border-b-2 border-[#020202] opacity-100' : 'opacity-40 hover:opacity-70'}`}
+                        className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-semibold uppercase tracking-widest whitespace-nowrap transition-colors ${tab === t.key ? 'border-b-2 border-[#020202] opacity-100' : 'opacity-40 hover:opacity-70'}`}
                     >
                         {t.label}
                     </button>
@@ -424,72 +424,132 @@ export default function AdminPage() {
             ) : data.length === 0 ? (
                 <div className="text-center py-20 opacity-60">尚無資料</div>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="border-b border-[#020202]/20 text-xs uppercase tracking-widest opacity-50">
-                                {tab === 'portfolios' && <><th className="py-3 pr-4">名稱</th><th className="py-3 pr-4">標籤</th><th className="py-3 pr-4">建立時間</th><th className="py-3">操作</th></>}
-                                {tab === 'services' && <><th className="py-3 pr-4">名稱</th><th className="py-3 pr-4">分類</th><th className="py-3 pr-4">價格</th><th className="py-3">操作</th></>}
-                                {tab === 'quotes' && <><th className="py-3 pr-4">編號</th><th className="py-3 pr-4">客戶</th><th className="py-3 pr-4">信箱</th><th className="py-3 pr-4">服務</th><th className="py-3 pr-4">預算</th><th className="py-3 pr-4">時間</th><th className="py-3">操作</th></>}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.map(item => (
-                                <tr key={item.id} className="border-b border-[#020202]/10 hover:bg-[#020202]/5 transition-colors">
-                                    {tab === 'portfolios' && (
-                                        <>
-                                            <td className="py-4 pr-4 font-medium">{item.name_zh}<span className="opacity-40 ml-2 text-sm">{item.name_en}</span></td>
-                                            <td className="py-4 pr-4 text-sm opacity-60">{item.tags?.join(', ')}</td>
-                                            <td className="py-4 pr-4 text-sm opacity-60">{new Date(item.created_at).toLocaleDateString('zh-TW')}</td>
-                                            <td className="py-4">
-                                                <div className="flex gap-3">
-                                                    <button onClick={() => setEditing(item)} className="opacity-40 hover:opacity-100 transition-opacity"><Pencil size={16} /></button>
-                                                    <button onClick={() => handleDelete(item.id)} className="opacity-40 hover:opacity-100 hover:text-red-600 transition-all"><Trash2 size={16} /></button>
-                                                </div>
-                                            </td>
-                                        </>
-                                    )}
-                                    {tab === 'services' && (
-                                        <>
-                                            <td className="py-4 pr-4 font-medium">{item.name}</td>
-                                            <td className="py-4 pr-4 text-sm opacity-60">{item.category}</td>
-                                            <td className="py-4 pr-4 text-sm">{item.price != null ? `NT$ ${item.price.toLocaleString('zh-TW')}` : '議價'}</td>
-                                            <td className="py-4">
-                                                <div className="flex gap-3">
-                                                    <button onClick={() => setEditing(item)} className="opacity-40 hover:opacity-100 transition-opacity"><Pencil size={16} /></button>
-                                                    <button onClick={() => handleDelete(item.id)} className="opacity-40 hover:opacity-100 hover:text-red-600 transition-all"><Trash2 size={16} /></button>
-                                                </div>
-                                            </td>
-                                        </>
-                                    )}
-                                    {tab === 'quotes' && (
-                                        <>
-                                            <td className="py-4 pr-4 text-sm font-mono font-semibold">{item.quote_number}</td>
-                                            <td className="py-4 pr-4 font-medium">{item.client_name}</td>
-                                            <td className="py-4 pr-4 text-sm opacity-60">{item.client_email}</td>
-                                            <td className="py-4 pr-4 text-sm opacity-60">{item.service_id}</td>
-                                            <td className="py-4 pr-4 text-sm">NT$ {item.budget_min?.toLocaleString('zh-TW')}{item.budget_max ? ` ~ ${item.budget_max.toLocaleString('zh-TW')}` : ' 起'}</td>
-                                            <td className="py-4 pr-4 text-sm opacity-60">{item.expected_completion}</td>
-                                            <td className="py-4">
-                                                <div className="flex gap-3">
-                                                    <button
-                                                        onClick={() => handleCreateCase(item.id)}
-                                                        disabled={caseCreating}
-                                                        title="成立案件"
-                                                        className="opacity-40 hover:opacity-100 transition-opacity disabled:opacity-20"
-                                                    >
-                                                        <Briefcase size={16} />
-                                                    </button>
-                                                    <button onClick={() => handleDelete(item.id)} className="opacity-40 hover:opacity-100 hover:text-red-600 transition-all"><Trash2 size={16} /></button>
-                                                </div>
-                                            </td>
-                                        </>
-                                    )}
+                <>
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-3">
+                        {data.map(item => (
+                            <div key={item.id} className="border border-[#020202]/10 p-4 hover:bg-[#020202]/[0.02] transition-colors">
+                                {tab === 'portfolios' && (
+                                    <>
+                                        <div className="flex justify-between items-start">
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-medium truncate">{item.name_zh}</p>
+                                                <p className="text-sm opacity-40 truncate">{item.name_en}</p>
+                                            </div>
+                                            <div className="flex gap-3 shrink-0 ml-3">
+                                                <button onClick={() => setEditing(item)} className="opacity-40 hover:opacity-100 transition-opacity"><Pencil size={16} /></button>
+                                                <button onClick={() => handleDelete(item.id)} className="opacity-40 hover:opacity-100 hover:text-red-600 transition-all"><Trash2 size={16} /></button>
+                                            </div>
+                                        </div>
+                                        {item.tags?.length > 0 && <p className="text-xs opacity-50 mt-2">{item.tags.join(', ')}</p>}
+                                        <p className="text-xs opacity-30 mt-1">{new Date(item.created_at).toLocaleDateString('zh-TW')}</p>
+                                    </>
+                                )}
+                                {tab === 'services' && (
+                                    <>
+                                        <div className="flex justify-between items-start">
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-medium truncate">{item.name}</p>
+                                                <p className="text-sm opacity-50">{item.category}</p>
+                                            </div>
+                                            <div className="flex gap-3 shrink-0 ml-3">
+                                                <button onClick={() => setEditing(item)} className="opacity-40 hover:opacity-100 transition-opacity"><Pencil size={16} /></button>
+                                                <button onClick={() => handleDelete(item.id)} className="opacity-40 hover:opacity-100 hover:text-red-600 transition-all"><Trash2 size={16} /></button>
+                                            </div>
+                                        </div>
+                                        <p className="text-sm mt-2">{item.price != null ? `NT$ ${item.price.toLocaleString('zh-TW')}` : '議價'}</p>
+                                    </>
+                                )}
+                                {tab === 'quotes' && (
+                                    <>
+                                        <div className="flex justify-between items-start">
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-mono font-semibold text-sm">{item.quote_number}</p>
+                                                <p className="font-medium mt-1">{item.client_name}</p>
+                                                <p className="text-sm opacity-50 truncate">{item.client_email}</p>
+                                            </div>
+                                            <div className="flex gap-3 shrink-0 ml-3">
+                                                <button onClick={() => handleCreateCase(item.id)} disabled={caseCreating} title="成立案件" className="opacity-40 hover:opacity-100 transition-opacity disabled:opacity-20"><Briefcase size={16} /></button>
+                                                <button onClick={() => handleDelete(item.id)} className="opacity-40 hover:opacity-100 hover:text-red-600 transition-all"><Trash2 size={16} /></button>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-sm">
+                                            <span>NT$ {item.budget_min?.toLocaleString('zh-TW')}{item.budget_max ? ` ~ ${item.budget_max.toLocaleString('zh-TW')}` : ' 起'}</span>
+                                            <span className="opacity-50">{item.expected_completion}</span>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    {/* Desktop Table */}
+                    <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead>
+                                <tr className="border-b border-[#020202]/20 text-xs uppercase tracking-widest opacity-50">
+                                    {tab === 'portfolios' && <><th className="py-3 pr-4">名稱</th><th className="py-3 pr-4">標籤</th><th className="py-3 pr-4">建立時間</th><th className="py-3">操作</th></>}
+                                    {tab === 'services' && <><th className="py-3 pr-4">名稱</th><th className="py-3 pr-4">分類</th><th className="py-3 pr-4">價格</th><th className="py-3">操作</th></>}
+                                    {tab === 'quotes' && <><th className="py-3 pr-4">編號</th><th className="py-3 pr-4">客戶</th><th className="py-3 pr-4">信箱</th><th className="py-3 pr-4">服務</th><th className="py-3 pr-4">預算</th><th className="py-3 pr-4">時間</th><th className="py-3">操作</th></>}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                {data.map(item => (
+                                    <tr key={item.id} className="border-b border-[#020202]/10 hover:bg-[#020202]/5 transition-colors">
+                                        {tab === 'portfolios' && (
+                                            <>
+                                                <td className="py-4 pr-4 font-medium">{item.name_zh}<span className="opacity-40 ml-2 text-sm">{item.name_en}</span></td>
+                                                <td className="py-4 pr-4 text-sm opacity-60">{item.tags?.join(', ')}</td>
+                                                <td className="py-4 pr-4 text-sm opacity-60">{new Date(item.created_at).toLocaleDateString('zh-TW')}</td>
+                                                <td className="py-4">
+                                                    <div className="flex gap-3">
+                                                        <button onClick={() => setEditing(item)} className="opacity-40 hover:opacity-100 transition-opacity"><Pencil size={16} /></button>
+                                                        <button onClick={() => handleDelete(item.id)} className="opacity-40 hover:opacity-100 hover:text-red-600 transition-all"><Trash2 size={16} /></button>
+                                                    </div>
+                                                </td>
+                                            </>
+                                        )}
+                                        {tab === 'services' && (
+                                            <>
+                                                <td className="py-4 pr-4 font-medium">{item.name}</td>
+                                                <td className="py-4 pr-4 text-sm opacity-60">{item.category}</td>
+                                                <td className="py-4 pr-4 text-sm">{item.price != null ? `NT$ ${item.price.toLocaleString('zh-TW')}` : '議價'}</td>
+                                                <td className="py-4">
+                                                    <div className="flex gap-3">
+                                                        <button onClick={() => setEditing(item)} className="opacity-40 hover:opacity-100 transition-opacity"><Pencil size={16} /></button>
+                                                        <button onClick={() => handleDelete(item.id)} className="opacity-40 hover:opacity-100 hover:text-red-600 transition-all"><Trash2 size={16} /></button>
+                                                    </div>
+                                                </td>
+                                            </>
+                                        )}
+                                        {tab === 'quotes' && (
+                                            <>
+                                                <td className="py-4 pr-4 text-sm font-mono font-semibold">{item.quote_number}</td>
+                                                <td className="py-4 pr-4 font-medium">{item.client_name}</td>
+                                                <td className="py-4 pr-4 text-sm opacity-60">{item.client_email}</td>
+                                                <td className="py-4 pr-4 text-sm opacity-60">{item.service_id}</td>
+                                                <td className="py-4 pr-4 text-sm">NT$ {item.budget_min?.toLocaleString('zh-TW')}{item.budget_max ? ` ~ ${item.budget_max.toLocaleString('zh-TW')}` : ' 起'}</td>
+                                                <td className="py-4 pr-4 text-sm opacity-60">{item.expected_completion}</td>
+                                                <td className="py-4">
+                                                    <div className="flex gap-3">
+                                                        <button
+                                                            onClick={() => handleCreateCase(item.id)}
+                                                            disabled={caseCreating}
+                                                            title="成立案件"
+                                                            className="opacity-40 hover:opacity-100 transition-opacity disabled:opacity-20"
+                                                        >
+                                                            <Briefcase size={16} />
+                                                        </button>
+                                                        <button onClick={() => handleDelete(item.id)} className="opacity-40 hover:opacity-100 hover:text-red-600 transition-all"><Trash2 size={16} /></button>
+                                                    </div>
+                                                </td>
+                                            </>
+                                        )}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
             ))}
 
             {/* Modals */}
