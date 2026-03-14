@@ -6,6 +6,74 @@ import { useI18n } from '../i18n';
 
 const WS_BASE = API_BASE.replace(/^http/, 'ws');
 
+// ── Notification helpers ──
+
+const ORIGINAL_TITLE = document.title;
+
+function useNotification() {
+    const flashTimer = useRef<ReturnType<typeof setInterval>>(undefined);
+    const audioCtx = useRef<AudioContext | null>(null);
+
+    // Request browser notification permission on mount
+    useEffect(() => {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }, []);
+
+    // Restore title on focus
+    useEffect(() => {
+        const restore = () => {
+            if (flashTimer.current) {
+                clearInterval(flashTimer.current);
+                flashTimer.current = undefined;
+            }
+            document.title = ORIGINAL_TITLE;
+        };
+        window.addEventListener('focus', restore);
+        return () => {
+            window.removeEventListener('focus', restore);
+            restore();
+        };
+    }, []);
+
+    const notify = useCallback((sender: string, preview: string) => {
+        // 1) Tab title flash
+        if (!document.hasFocus() && !flashTimer.current) {
+            let on = false;
+            flashTimer.current = setInterval(() => {
+                document.title = (on = !on) ? `💬 ${sender}` : ORIGINAL_TITLE;
+            }, 1000);
+        }
+
+        // 2) Sound — short beep via Web Audio API
+        try {
+            if (!audioCtx.current) audioCtx.current = new AudioContext();
+            const ctx = audioCtx.current;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 880;
+            gain.gain.value = 0.15;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+            osc.stop(ctx.currentTime + 0.3);
+        } catch { /* AudioContext may fail in some contexts */ }
+
+        // 3) Browser Notification
+        if ('Notification' in window && Notification.permission === 'granted' && !document.hasFocus()) {
+            new Notification(sender, {
+                body: preview || '💬',
+                icon: '/favicon.ico',
+                tag: 'chat-msg',            // collapse duplicates
+            });
+        }
+    }, []);
+
+    return notify;
+}
+
 interface ChatMsg {
     id: string;
     room_id: string;
@@ -152,6 +220,7 @@ function AuthForm({ onAuth }: { onAuth: (token: string, roomId: string, name: st
 
 export function ChatRoom({ token, roomId, senderType, onAuthFailed }: { token: string; roomId: string; senderType: 'admin' | 'client'; onAuthFailed?: () => void }) {
     const { t } = useI18n();
+    const notify = useNotification();
     const [messages, setMessages] = useState<ChatMsg[]>([]);
     const [input, setInput] = useState('');
     const [typing, setTyping] = useState(false);
@@ -213,6 +282,12 @@ export function ChatRoom({ token, roomId, senderType, onAuthFailed }: { token: s
                     // Auto mark-read if the message is from the peer and page is visible
                     if ((msg as ChatMsg).sender_type !== senderType && document.hasFocus()) {
                         ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify({ type: 'read' }));
+                    }
+                    // Notify if peer message and page not focused
+                    if ((msg as ChatMsg).sender_type !== senderType) {
+                        const sender = senderType === 'client' ? 'Anthony' : (msg as ChatMsg).sender_type;
+                        const preview = (msg as ChatMsg).content || ((msg as ChatMsg).image_url ? '📷' : '💬');
+                        notify(sender, preview);
                     }
                 } else if (data.type === 'typing') {
                     if (data.sender_type !== senderType) {
