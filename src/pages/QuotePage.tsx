@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { z } from 'zod';
 import { motion } from 'motion/react';
 import { Send, CheckCircle, MessageSquare, X, ShieldCheck } from 'lucide-react';
 import { useSearchParams, Link } from 'react-router-dom';
@@ -6,6 +7,7 @@ import { API_BASE } from '../api';
 import { useI18n } from '../i18n';
 import MarkdownEditor from '../components/MarkdownEditor';
 import CustomSelect from '../components/CustomSelect';
+import CustomDatePicker from '../components/CustomDatePicker';
 
 interface Service {
     id: string;
@@ -32,7 +34,8 @@ export default function QuotePage() {
         requirement: '',
         budget_min: '',
         budget_max: '',
-        expected_completion: '',
+        expected_start: '',
+        expected_end: '',
     });
     const requirementRef = useRef<HTMLTextAreaElement>(null);
 
@@ -50,7 +53,35 @@ export default function QuotePage() {
     }, [preselectedServiceId]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+        const { name, value } = e.target;
+        setForm(prev => {
+            const updated = { ...prev, [name]: value };
+            // Email 驗證
+            if (name === 'client_email') {
+                const emailSchema = z.string().email();
+                if (!emailSchema.safeParse(value).success) {
+                    setError(t('quote.emailError'));
+                } else {
+                    setError('');
+                }
+            }
+            return updated;
+        });
+    };
+    const handleDateChange = (name: 'expected_start' | 'expected_end', value: string) => {
+        setForm(prev => {
+            const updated = { ...prev, [name]: value };
+            if (name === 'expected_end' && updated.expected_start && value) {
+                if (new Date(value) <= new Date(updated.expected_start)) {
+                    setError(t('quote.endDateAfterStartError'));
+                } else {
+                    setError('');
+                }
+            } else {
+                setError('');
+            }
+            return updated;
+        });
     };
 
     const [phoneError, setPhoneError] = useState('');
@@ -69,9 +100,9 @@ export default function QuotePage() {
         if (!v) return;
         if (phoneTimer.current) clearTimeout(phoneTimer.current);
         if (!/^09\d{2}-\d{3}-\d{3}$/.test(v)) {
-            const msg = !v.startsWith('09') ? '電話須以 09 開頭'
-                : v.replace(/[^\d]/g, '').length < 10 ? '電話號碼須為 10 碼'
-                    : '格式須為 09xx-xxx-xxx';
+            const msg = !v.startsWith('09') ? t('quote.phone09Error')
+                : v.replace(/[^\d]/g, '').length < 10 ? t('quote.phoneLengthError')
+                    : t('quote.phoneFormatError');
             setPhoneError(msg);
             phoneTimer.current = setTimeout(() => setPhoneError(''), 3000);
         } else {
@@ -84,7 +115,21 @@ export default function QuotePage() {
         return num ? Number(num).toLocaleString('en-US') : '';
     };
     const handleMoneyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm(prev => ({ ...prev, [e.target.name]: e.target.value.replace(/[^\d]/g, '') }));
+        const { name, value } = e.target;
+        const cleanValue = value.replace(/[^\d]/g, '');
+        setForm(prev => {
+            const updated = { ...prev, [name]: cleanValue };
+            const min = parseFloat(name === 'budget_min' ? cleanValue : updated.budget_min);
+            const max = parseFloat(name === 'budget_max' ? cleanValue : updated.budget_max);
+            if (isNaN(min) || min < 1) {
+                setError(t('quote.budgetMinError'));
+            } else if (updated.budget_max && !isNaN(max) && max < min) {
+                setError(t('quote.budgetMaxError'));
+            } else {
+                setError('');
+            }
+            return updated;
+        });
     };
 
     // --- Confirmation modal + CAPTCHA ---
@@ -100,10 +145,28 @@ export default function QuotePage() {
     const handlePreSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        // Email Validation
+        const emailSchema = z.string().email();
+        if (!emailSchema.safeParse(form.client_email).success) {
+            setError(t('quote.emailError'));
+            return;
+        }
+        // Phone Validation
         if (!/^09\d{2}-\d{3}-\d{3}$/.test(form.client_phone)) {
-            setPhoneError('格式須為 09xx-xxx-xxx');
+            setPhoneError(t('quote.phoneFormatError'));
             if (phoneTimer.current) clearTimeout(phoneTimer.current);
             phoneTimer.current = setTimeout(() => setPhoneError(''), 3000);
+            return;
+        }
+        // Budget Validation
+        const min = parseFloat(form.budget_min);
+        const max = form.budget_max ? parseFloat(form.budget_max) : null;
+        if (isNaN(min) || min < 1) {
+            setError(t('quote.budgetMinError') || '預算下限必須至少為 1');
+            return;
+        }
+        if (max !== null && max < min) {
+            setError(t('quote.budgetMaxError') || '預算上限不得低於下限');
             return;
         }
         setCaptchaInput('');
@@ -285,14 +348,35 @@ export default function QuotePage() {
                 {/* Timeline */}
                 <div className="space-y-8">
                     <h3 className="text-xs uppercase tracking-[0.3em] font-semibold opacity-50 mb-4">{t('quote.sectionTimeline')}</h3>
-                    <input
-                        name="expected_completion"
-                        value={form.expected_completion}
-                        onChange={handleChange}
-                        placeholder={t('quote.timelinePlaceholder')}
-                        required
-                        className={inputBase}
-                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <label className="block text-xs font-semibold mb-2 opacity-60">{t('quote.expectedStart')}</label>
+                            <CustomDatePicker
+                                value={form.expected_start}
+                                onChange={v => handleDateChange('expected_start', v)}
+                                required
+                                placeholder={t('quote.expectedStartPlaceholder')}
+                                minYear={new Date().getFullYear()}
+                                maxYear={new Date().getFullYear() + 100}
+                                className="mb-2"
+                            // Only allow dates from today onward
+                            // minDate={today}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-semibold mb-2 opacity-60">{t('quote.expectedEnd')}</label>
+                            <CustomDatePicker
+                                value={form.expected_end}
+                                onChange={v => handleDateChange('expected_end', v)}
+                                placeholder={t('quote.expectedEndPlaceholder')}
+                                minYear={new Date().getFullYear()}
+                                maxYear={new Date().getFullYear() + 100}
+                                className="mb-2"
+                            // Only allow dates from today onward, and after expected_start
+                            // minDate={form.expected_start || today}
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 {error && (
@@ -344,9 +428,15 @@ export default function QuotePage() {
                                 </span>
                             </div>
                             <div className="flex justify-between border-b border-[#020202]/10 pb-2">
-                                <span className="opacity-50">{t('quote.sectionTimeline')}</span>
-                                <span className="font-medium">{form.expected_completion}</span>
+                                <span className="opacity-50">{t('quote.expectedStart')}</span>
+                                <span className="font-medium">{form.expected_start || '-'}</span>
                             </div>
+                            {form.expected_end && (
+                                <div className="flex justify-between border-b border-[#020202]/10 pb-2">
+                                    <span className="opacity-50">{t('quote.expectedEnd')}</span>
+                                    <span className="font-medium">{form.expected_end}</span>
+                                </div>
+                            )}
                             {form.requirement && (
                                 <div className="border-b border-[#020202]/10 pb-2">
                                     <span className="opacity-50 block mb-1">{t('quote.sectionRequirement')}</span>

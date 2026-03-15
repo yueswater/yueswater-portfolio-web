@@ -2,11 +2,14 @@ export type Locale = 'zh' | 'en';
 
 export const translations = {
     zh: {
+        'date.year': '年',
+        'date.month': '月',
+        'date.day': '日',
         // Navbar
         'nav.work': '作品',
         'nav.about': '關於',
         'nav.services': '服務',
-        'nav.contact': '聯絡',
+        'nav.contact': '報價',
         'nav.chat': '聊天室',
         'nav.langLabel': 'EN',
 
@@ -53,7 +56,11 @@ export const translations = {
         'quote.budgetMin': '預算下限（必填）',
         'quote.budgetMax': '預算上限（選填）',
         'quote.sectionTimeline': '期望時間',
+        'quote.expectedStart': '期望開始時間',
+        'quote.expectedEnd': '期望結案時間',
         'quote.timelinePlaceholder': '例如：2026 年 6 月底前',
+        'quote.expectedStartPlaceholder': '請選擇期望開始日期',
+        'quote.expectedEndPlaceholder': '請選擇期望結案日期（選填）',
         'quote.submitting': '提交中...',
         'quote.submit': '送出報價需求',
         'quote.errorFallback': '提交失敗',
@@ -65,7 +72,14 @@ export const translations = {
         'quote.captchaLabel': '安全驗證',
         'quote.captchaPlaceholder': '請輸入答案',
         'quote.captchaWrong': '答案不正確，請再試一次',
-        'quote.budgetUp': '起',
+        'quote.budgetUp': '以上',
+        'quote.budgetMinError': '預算下限必須至少為 1',
+        'quote.budgetMaxError': '預算上限不得低於下限',
+        'quote.emailError': '請輸入有效的電子郵件',
+        'quote.phone09Error': '電話須以 09 開頭',
+        'quote.phoneLengthError': '電話號碼須為 10 碼',
+        'quote.phoneFormatError': '格式須為 09xx-xxx-xxx',
+        'quote.endDateAfterStartError': '結案日期必須晚於開始日期',
 
         // Login Page
         'login.title': '登入',
@@ -118,11 +132,14 @@ export const translations = {
         'delete.wrongPassword': '密碼錯誤',
     },
     en: {
+        'date.year': 'Year',
+        'date.month': 'Month',
+        'date.day': 'Day',
         // Navbar
         'nav.work': 'Work',
         'nav.about': 'About',
         'nav.services': 'Services',
-        'nav.contact': 'Contact',
+        'nav.contact': 'Quote',
         'nav.chat': 'Chat',
         'nav.langLabel': '中文',
 
@@ -169,7 +186,11 @@ export const translations = {
         'quote.budgetMin': 'Min Budget (required)',
         'quote.budgetMax': 'Max Budget (optional)',
         'quote.sectionTimeline': 'Expected Timeline',
+        'quote.expectedStart': 'Expected Start Date',
+        'quote.expectedEnd': 'Expected End Date',
         'quote.timelinePlaceholder': 'e.g. By the end of June 2026',
+        'quote.expectedStartPlaceholder': 'Select expected start date',
+        'quote.expectedEndPlaceholder': 'Select expected end date (optional)',
         'quote.submitting': 'Submitting...',
         'quote.submit': 'Submit Quote Request',
         'quote.errorFallback': 'Submission failed',
@@ -182,6 +203,13 @@ export const translations = {
         'quote.captchaPlaceholder': 'Enter the answer',
         'quote.captchaWrong': 'Wrong answer, please try again',
         'quote.budgetUp': 'up',
+        'quote.budgetMinError': 'Min budget must be at least 1',
+        'quote.budgetMaxError': 'Max budget cannot be less than min',
+        'quote.emailError': 'Please enter a valid email',
+        'quote.phone09Error': 'Phone number must start with 09',
+        'quote.phoneLengthError': 'Phone number must be 10 digits',
+        'quote.phoneFormatError': 'Format must be 09xx-xxx-xxx',
+        'quote.endDateAfterStartError': 'End date must be after start date',
 
         // Login Page
         'login.title': 'Login',
