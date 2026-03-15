@@ -187,6 +187,7 @@ export default function QuotePage() {
                 ...form,
                 budget_min: parseFloat(form.budget_min),
                 budget_max: form.budget_max ? parseFloat(form.budget_max) : null,
+                expected_end: form.expected_end ? form.expected_end : null, // 修正: 空字串轉 null
             };
 
             const res = await fetch(`${API_BASE}/api/quotes`, {
