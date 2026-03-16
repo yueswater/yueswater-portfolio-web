@@ -34,6 +34,7 @@ export const translations = {
         // Services Page
         'services.title': '服務項目',
         'services.subtitle': '提供從前端開發到全端整合的完整服務，滿足各種數位需求。',
+        'services.disclaimer': '※ 標價僅供參考，實際費用將依專案規模、需求複雜度及雙方最終協議為準。',
         'services.loading': '載入中...',
         'services.empty': '目前尚無服務項目',
         'services.negotiate': '議價',
@@ -164,6 +165,7 @@ export const translations = {
         // Services Page
         'services.title': 'Services',
         'services.subtitle': 'Comprehensive services from front-end development to full-stack integration, meeting all your digital needs.',
+        'services.disclaimer': '* All listed prices are for reference only. Actual costs will be determined by project scope, complexity, and final mutual agreement.',
         'services.loading': 'Loading...',
         'services.empty': 'No services available yet',
         'services.negotiate': 'Negotiable',
